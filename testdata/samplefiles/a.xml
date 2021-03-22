@@ -1,0 +1,5 @@
+<rootNode>
+    <childNode childAtt1="a" childAdd2="b">
+        <grandChildNode>c</grandChildNode>
+    </childNode>
+</rootNode>
