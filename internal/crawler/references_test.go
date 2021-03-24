@@ -22,8 +22,7 @@ func TestExtract(t *testing.T) {
 		t.Run(tc.tcID, func(t *testing.T) {
 			re, err := NewRefExtractor(tc.tcOpts...)
 			assert.Nil(t, err)
-			got, err := re.Extract(tc.tcIn)
-			assert.Nil(t, err)
+			got:= re.Extract(tc.tcIn)
 			assert.Equal(t, tc.expMatches, got)
 		})
 	}

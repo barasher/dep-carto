@@ -5,14 +5,17 @@ import (
 	"io"
 )
 
-func NewXmlCrawler() *xmlCrawler {
-	return &xmlCrawler{}
+func NewXmlCrawler(refExt RefExtractorInterface) *xmlCrawler {
+	return &xmlCrawler{
+		refExt: refExt,
+	}
 }
 
 type xmlCrawler struct {
+	refExt RefExtractorInterface
 }
 
-func (*xmlCrawler) Crawl(in io.Reader) ([]string, error) {
+func (c *xmlCrawler) Crawl(in io.Reader) ([]string, error) {
 	var res []string
 	d := xml.NewDecoder(in)
 	for {
@@ -26,13 +29,13 @@ func (*xmlCrawler) Crawl(in io.Reader) ([]string, error) {
 		switch t := t.(type) {
 		case xml.StartElement:
 			for _, curAtt := range t.Attr {
-				if is, r := GetReferences(curAtt.Value); is {
-					res = append(res, r)
+				if ext := c.refExt.Extract(curAtt.Value); ext != "" {
+					res = append(res, ext)
 				}
 			}
 		case xml.CharData:
-			if is, r := GetReferences(string(t)); is {
-				res = append(res, r)
+			if ext := c.refExt.Extract(string(t)); ext != "" {
+				res = append(res, ext)
 			}
 		}
 	}

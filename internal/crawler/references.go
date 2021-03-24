@@ -51,16 +51,16 @@ func WithSuffix(s string) refExtractorOption {
 }
 
 // TODO serialized multivalue attributes
-func (refExt *RefExtractor) Extract(s string) (string, error) {
+func (refExt *RefExtractor) Extract(s string) string {
 	for _, re := range refExt.regexps {
 		matched := re.FindString(s)
 		if matched != "" {
-			return matched, nil
+			return matched
 		}
 	}
-	return "", nil
+	return ""
 }
 
-func GetReferences(v string) (bool, string) {
-	return len(strings.TrimSpace(v)) > 0, v
+type RefExtractorInterface interface {
+	Extract(s string) string
 }

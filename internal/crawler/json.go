@@ -5,14 +5,17 @@ import (
 	"io"
 )
 
-func NewJsonCrawler() *jsonCrawler {
-	return &jsonCrawler{}
+func NewJsonCrawler(refExt RefExtractorInterface) *jsonCrawler {
+	return &jsonCrawler{
+		refExt: refExt,
+	}
 }
 
 type jsonCrawler struct {
+	refExt RefExtractorInterface
 }
 
-func (*jsonCrawler) Crawl(in io.Reader) ([]string, error) {
+func (c *jsonCrawler) Crawl(in io.Reader) ([]string, error) {
 	var res []string
 	d := json.NewDecoder(in)
 	for {
@@ -25,8 +28,8 @@ func (*jsonCrawler) Crawl(in io.Reader) ([]string, error) {
 		}
 		switch t := t.(type) {
 		case string:
-			if is, r := GetReferences(t); is {
-				res = append(res, r)
+			if ext := c.refExt.Extract(t); ext != "" {
+				res = append(res, ext)
 			}
 		}
 	}
