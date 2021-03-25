@@ -10,8 +10,9 @@ type Server struct {
 	LastUpdate   time.Time
 }
 
-
 type Model interface {
-	AddServer(server Server) error
+	AddServer(Server) error
 	GetAllServers() ([]Server, error)
+	GetServersSince(time.Duration) ([]Server, error)
+	Clear() error
 }

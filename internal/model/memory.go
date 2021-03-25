@@ -1,5 +1,7 @@
 package model
 
+import "time"
+
 type memoryModel struct {
 	servers []Server
 }
@@ -21,6 +23,22 @@ func (m *memoryModel) AddServer(server Server) error {
 
 func (m *memoryModel) GetAllServers() ([]Server, error) {
 	return m.servers, nil
+}
+
+func (m *memoryModel) GetServersSince(d time.Duration) ([]Server, error) {
+	limit := time.Now().Add(-d)
+	var s []Server
+	for _, curS := range m.servers {
+		if ! curS.LastUpdate.Before(limit) {
+			s = append(s, curS)
+		}
+	}
+	return s, nil
+}
+
+func (m *memoryModel) Clear() error {
+	m.servers = []Server{}
+	return nil
 }
 
 
