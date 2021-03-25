@@ -1,10 +1,33 @@
 package model
 
 import (
+	"encoding/json"
 	"github.com/stretchr/testify/assert"
+	"strings"
 	"testing"
 	"time"
 )
+
+func TestJSON(t *testing.T) {
+	raw := `
+		{
+		  "hostname": "h",
+		  "key": "k",
+		  "ips": ["i1", "i2"],
+		  "dependencies": ["d1", "d2"],
+		  "lastUpdate": "2001-02-03T04:05:06Z"
+		}
+		`
+	var s Server
+	assert.Nil(t, json.NewDecoder(strings.NewReader(raw)).Decode(&s))
+	assert.Equal(t, "h", s.Hostname)
+	assert.Equal(t, "k", s.Key)
+	assert.ElementsMatch(t, []string{"i1", "i2"}, s.IPs)
+	assert.ElementsMatch(t, []string{"d1", "d2"}, s.Dependencies)
+	expDate, err := time.Parse(time.RFC3339, "2001-02-03T04:05:06Z")
+	assert.Nil(t, err)
+	assert.Equal(t, expDate, s.LastUpdate)
+}
 
 func getDay(t *testing.T, d string) time.Time {
 	parsed, err := time.Parse(time.RFC3339, "2020-03-"+d+"T01:01:01Z")

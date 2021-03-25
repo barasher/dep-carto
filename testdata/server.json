@@ -1,0 +1,7 @@
+{
+  "hostname": "h",
+  "key": "k",
+  "ips": ["i1", "i2"],
+  "dependencies": ["d1", "d2"],
+  "lastUpdate": "2001-02-03T04:05:06Z"
+}
