@@ -11,8 +11,8 @@ type Server struct {
 }
 
 type Model interface {
-	AddServer(Server) error
-	GetAllServers() ([]Server, error)
-	GetServersSince(time.Duration) ([]Server, error)
+	Add(Server) error
+	GetAll() ([]Server, error)
+	GetSince(time.Duration) ([]Server, error)
 	Clear() error
 }

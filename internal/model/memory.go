@@ -10,7 +10,7 @@ func NewMemoryModel() Model {
 	return &memoryModel{}
 }
 
-func (m *memoryModel) AddServer(server Server) error {
+func (m *memoryModel) Add(server Server) error {
 	for i, s := range m.servers {
 		if s.Hostname == server.Hostname && s.Key == server.Key {
 			m.servers[i] = server
@@ -21,11 +21,11 @@ func (m *memoryModel) AddServer(server Server) error {
 	return nil
 }
 
-func (m *memoryModel) GetAllServers() ([]Server, error) {
+func (m *memoryModel) GetAll() ([]Server, error) {
 	return m.servers, nil
 }
 
-func (m *memoryModel) GetServersSince(d time.Duration) ([]Server, error) {
+func (m *memoryModel) GetSince(d time.Duration) ([]Server, error) {
 	limit := time.Now().Add(-d)
 	var s []Server
 	for _, curS := range m.servers {
