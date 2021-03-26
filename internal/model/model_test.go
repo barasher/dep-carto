@@ -29,6 +29,21 @@ func TestJSON(t *testing.T) {
 	assert.Equal(t, expDate, s.LastUpdate)
 }
 
+func TestMarshalingUnmarshaling(t *testing.T) {
+	s1 := Server{
+		Hostname:     "hh",
+		Key:          "k",
+		IPs:          []string{"i1", "i2"},
+		Dependencies: []string{"d1", "d2"},
+		LastUpdate:   getDay(t, "01"),
+	}
+	b, err := json.Marshal(s1)
+	assert.Nil(t, err)
+	var s2 Server
+	assert.Nil(t, json.Unmarshal(b, &s2))
+	assert.Equal(t, s1, s2)
+}
+
 func getDay(t *testing.T, d string) time.Time {
 	parsed, err := time.Parse(time.RFC3339, "2020-03-"+d+"T01:01:01Z")
 	assert.Nil(t, err)
