@@ -1,6 +1,7 @@
 package model
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/stretchr/testify/assert"
 	"strings"
@@ -64,8 +65,8 @@ func testCreate(t *testing.T, m Model) {
 		Dependencies: []string{"d1", "d2"},
 		LastUpdate:   getDay(t, "01"),
 	}
-	assert.Nil(t, m.Add(s1))
-	servers, err := m.GetAll()
+	assert.Nil(t, m.Add(context.Background(), s1))
+	servers, err := m.GetAll(context.Background())
 	assert.Nil(t, err)
 	assert.ElementsMatch(t, []Server{s1}, servers)
 
@@ -76,8 +77,8 @@ func testCreate(t *testing.T, m Model) {
 		Dependencies: []string{"d1"},
 		LastUpdate:   getDay(t, "02"),
 	}
-	assert.Nil(t, m.Add(s1))
-	servers, err = m.GetAll()
+	assert.Nil(t, m.Add(context.Background(), s1))
+	servers, err = m.GetAll(context.Background())
 	assert.Nil(t, err)
 	assert.ElementsMatch(t, []Server{s1}, servers)
 
@@ -88,8 +89,8 @@ func testCreate(t *testing.T, m Model) {
 		Dependencies: []string{"d3"},
 		LastUpdate:   getDay(t, "03"),
 	}
-	assert.Nil(t, m.Add(s2))
-	servers, err = m.GetAll()
+	assert.Nil(t, m.Add(context.Background(), s2))
+	servers, err = m.GetAll(context.Background())
 	assert.Nil(t, err)
 	assert.ElementsMatch(t, []Server{s1, s2}, servers)
 
@@ -101,8 +102,8 @@ func testCreate(t *testing.T, m Model) {
 		Dependencies: []string{"d1", "d2"},
 		LastUpdate:   getDay(t, "04"),
 	}
-	assert.Nil(t, m.Add(s1b))
-	servers, err = m.GetAll()
+	assert.Nil(t, m.Add(context.Background(), s1b))
+	servers, err = m.GetAll(context.Background())
 	assert.Nil(t, err)
 	assert.ElementsMatch(t, []Server{s1, s2, s1b}, servers)
 }
@@ -116,40 +117,40 @@ func testDelete(t *testing.T, m Model) {
 		Dependencies: []string{"d1", "d2"},
 		LastUpdate:   getDay(t, "01"),
 	}
-	assert.Nil(t, m.Add(s1))
-	servers, err := m.GetAll()
+	assert.Nil(t, m.Add(context.Background(), s1))
+	servers, err := m.GetAll(context.Background())
 	assert.Nil(t, err)
 	assert.NotEmpty(t, servers)
 
 	// delete
-	assert.Nil(t, m.Clear())
+	assert.Nil(t, m.Clear(context.Background()))
 
 	// check
-	servers, err = m.GetAll()
+	servers, err = m.GetAll(context.Background())
 	assert.Nil(t, err)
 	assert.Empty(t, servers)
 }
 
 func testSince(t *testing.T, m Model) {
-	assert.Nil(t, m.Clear())
+	assert.Nil(t, m.Clear(context.Background()))
 
 	// create (-1d)
 	s := Server{
 		Hostname:   "h1",
 		LastUpdate: time.Now().Add(-24 * time.Hour),
 	}
-	assert.Nil(t, m.Add(s))
-	servers, err := m.GetAll()
+	assert.Nil(t, m.Add(context.Background(), s))
+	servers, err := m.GetAll(context.Background())
 	assert.Nil(t, err)
 	assert.Len(t, servers, 1)
 
 	// check -2d
-	servers, err = m.GetSince(48 * time.Hour)
+	servers, err = m.GetSince(context.Background(), 48*time.Hour)
 	assert.Nil(t, err)
 	assert.Len(t, servers, 1)
 
 	// check -1h
-	servers, err = m.GetSince(time.Hour)
+	servers, err = m.GetSince(context.Background(), time.Hour)
 	assert.Nil(t, err)
 	assert.Len(t, servers, 0)
 }

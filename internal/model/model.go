@@ -1,6 +1,9 @@
 package model
 
-import "time"
+import (
+	"context"
+	"time"
+)
 
 type Server struct {
 	Hostname     string    `json:"hostname"`
@@ -11,8 +14,8 @@ type Server struct {
 }
 
 type Model interface {
-	Add(Server) error
-	GetAll() ([]Server, error)
-	GetSince(time.Duration) ([]Server, error)
-	Clear() error
+	Add(ctx context.Context, s Server) error
+	GetAll(ctx context.Context) ([]Server, error)
+	GetSince(ctx context.Context, d time.Duration) ([]Server, error)
+	Clear(ctx context.Context) error
 }

@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/barasher/dep-carto/internal/model"
 	"github.com/rs/zerolog/log"
@@ -26,15 +27,16 @@ func (h getHandler) Method() string {
 
 func (h getHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	since, found := r.URL.Query()["since"]
+	ctx := context.Background()
 	if found {
-		h.getSince(w, since[0])
+		h.getSince(ctx, w, since[0])
 	} else {
-		h.getAll(w)
+		h.getAll(ctx, w)
 	}
 }
 
-func (h getHandler) getAll(w http.ResponseWriter) {
-	s, err := h.model.GetAll()
+func (h getHandler) getAll(ctx context.Context, w http.ResponseWriter) {
+	s, err := h.model.GetAll(ctx)
 	if err != nil {
 		log.Error().Msgf("Error while getting all servers: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
@@ -43,13 +45,13 @@ func (h getHandler) getAll(w http.ResponseWriter) {
 	w.WriteHeader(http.StatusOK)
 }
 
-func (h getHandler) getSince(w http.ResponseWriter, dur string) {
+func (h getHandler) getSince(ctx context.Context, w http.ResponseWriter, dur string) {
 	since, err := time.ParseDuration(dur)
 	if err != nil {
 		log.Error().Msgf("Error while parsing duration (%v): %v", since, err)
 		http.Error(w, err.Error(), http.StatusBadRequest)
 	}
-	s, err := h.model.GetSince(since)
+	s, err := h.model.GetSince(ctx, since)
 	if err != nil {
 		log.Error().Msgf("Error while getting servers since %v: %v", dur, err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)

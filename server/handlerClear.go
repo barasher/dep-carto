@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"github.com/barasher/dep-carto/internal/model"
 	"github.com/rs/zerolog/log"
 	"net/http"
@@ -23,7 +24,7 @@ func (h clearHandler) Method() string {
 }
 
 func (h clearHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	if err := h.model.Clear(); err != nil {
+	if err := h.model.Clear(context.Background()); err != nil {
 		log.Error().Msgf("Error while clearing servers: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}

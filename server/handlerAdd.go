@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"encoding/json"
 	"github.com/barasher/dep-carto/internal/model"
 	"github.com/rs/zerolog/log"
@@ -32,7 +33,7 @@ func (h addHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
-	if err := h.model.Add(s); err != nil {
+	if err := h.model.Add(context.Background(), s); err != nil {
 		log.Error().Msgf("Error while adding server: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
