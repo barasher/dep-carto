@@ -1,6 +1,7 @@
 package crawler
 
 import (
+	"fmt"
 	"github.com/stretchr/testify/assert"
 	"testing"
 )
@@ -16,6 +17,7 @@ func TestExtract(t *testing.T) {
 		{"ip1", noPrefix, "1.2.3.255", "1.2.3.255"},
 		{"ip3", noPrefix, "_1.2.3.4_", "1.2.3.4"},
 		{"prefix", []refExtractorOption{WithSuffix(".google.com")}, "http://pre.m_-ail.google.com:80", "pre.m_-ail.google.com"},
+		{"nothing", noPrefix, "blabla", ""},
 	}
 
 	for _, tc := range tcs {
@@ -26,4 +28,12 @@ func TestExtract(t *testing.T) {
 			assert.Equal(t, tc.expMatches, got)
 		})
 	}
+}
+
+func TestNewRefExtractor_FailOnOpts(t *testing.T) {
+	opt := func(extractor *RefExtractor) error {
+		return fmt.Errorf("err")
+	}
+	_, err := NewRefExtractor(opt)
+	assert.NotNil(t, err)
 }
