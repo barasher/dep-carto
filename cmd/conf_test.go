@@ -5,15 +5,16 @@ import (
 	"testing"
 )
 
-func TestLoadConf_Nominal(t *testing.T) {
+func TestLoadConf(t *testing.T) {
 	c, err := loadConf("../testdata/conf/server_mem_nominal.json")
 	assert.Nil(t, err)
 	assert.Equal(t, uint(123), c.Server.Port)
 	assert.Equal(t, "memory", c.Server.StorageType)
-}
 
-func TestLoadConf_NonExistingFile(t *testing.T) {
-	_, err := loadConf("nonExistingFile")
+	_, err = loadConf("nonExistingFile")
+	assert.NotNil(t, err)
+
+	_, err = loadConf("../testdata/conf/unparsable.json")
 	assert.NotNil(t, err)
 }
 
