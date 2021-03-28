@@ -10,7 +10,9 @@ type memoryModel struct {
 }
 
 func NewMemoryModel() Model {
-	return &memoryModel{}
+	return &memoryModel{
+		servers: []Server{},
+	}
 }
 
 func (m *memoryModel) Add(ctx context.Context, server Server) error {

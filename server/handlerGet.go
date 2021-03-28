@@ -41,8 +41,8 @@ func (h getHandler) getAll(ctx context.Context, w http.ResponseWriter) {
 		log.Error().Msgf("Error while getting all servers: %v", err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
-	json.NewEncoder(w).Encode(s)
 	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(s)
 }
 
 func (h getHandler) getSince(ctx context.Context, w http.ResponseWriter, dur string) {

@@ -1,0 +1,6 @@
+{
+  "server": {
+    "port": 123,
+    "storage": "memory"
+  }
+}
