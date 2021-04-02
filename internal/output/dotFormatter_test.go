@@ -31,6 +31,6 @@ func TestDotFormatter(t *testing.T) {
 	rec := httptest.NewRecorder()
 	NewDotFormatter().Format(generateServers(), rec)
 	contentType := rec.Header().Get("Content-Type")
-	assert.Truef(t, strings.HasPrefix(contentType, "text/plain" ), "got: %w", contentType)
+	assert.Truef(t, strings.HasPrefix(contentType, "text/plain" ), "got: %v", contentType)
 	assert.Equal(t, http.StatusOK, rec.Code)
 }

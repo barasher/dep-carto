@@ -9,7 +9,7 @@ import (
 	"text/template"
 )
 
-//go:embed dot.tpl
+//go:embed dotTemplate.tpl
 var dotTpl string
 
 type DotGraph struct {
@@ -31,7 +31,7 @@ func NewDotFormatter() DotFormatter {
 
 func (DotFormatter) Format(s []model.Server, w http.ResponseWriter) {
 	dg := newDotGraph(s)
-	w.Header().Add("Content-Type", "application/json")
+	w.Header().Add("Content-Type", "text/plain")
 	w.WriteHeader(http.StatusOK)
 	funcs := template.FuncMap{"join": strings.Join}
 	tpl, err := template.New("test").Funcs(funcs).Parse(dotTpl)
