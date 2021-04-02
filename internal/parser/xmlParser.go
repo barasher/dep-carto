@@ -1,21 +1,21 @@
-package crawler
+package parser
 
 import (
 	"encoding/xml"
 	"io"
 )
 
-func NewXmlCrawler(refExt RefExtractorInterface) *xmlCrawler {
-	return &xmlCrawler{
+func NewXmlParser(refExt RefExtractorInterface) *xmlParser {
+	return &xmlParser{
 		refExt: refExt,
 	}
 }
 
-type xmlCrawler struct {
+type xmlParser struct {
 	refExt RefExtractorInterface
 }
 
-func (c *xmlCrawler) Crawl(in io.Reader) ([]string, error) {
+func (c *xmlParser) Parse(in io.Reader) ([]string, error) {
 	var res []string
 	d := xml.NewDecoder(in)
 	for {

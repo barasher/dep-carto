@@ -1,21 +1,21 @@
-package crawler
+package parser
 
 import (
 	"encoding/json"
 	"io"
 )
 
-func NewJsonCrawler(refExt RefExtractorInterface) *jsonCrawler {
-	return &jsonCrawler{
+func NewJsonParser(refExt RefExtractorInterface) *jsonParser {
+	return &jsonParser{
 		refExt: refExt,
 	}
 }
 
-type jsonCrawler struct {
+type jsonParser struct {
 	refExt RefExtractorInterface
 }
 
-func (c *jsonCrawler) Crawl(in io.Reader) ([]string, error) {
+func (c *jsonParser) Parse(in io.Reader) ([]string, error) {
 	var res []string
 	d := json.NewDecoder(in)
 	for {
