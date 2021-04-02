@@ -4,7 +4,7 @@ import (
 	_ "embed"
 	"fmt"
 	"github.com/barasher/dep-carto/internal/model"
-	"io"
+	"net/http"
 	"strings"
 	"text/template"
 )
@@ -23,19 +23,27 @@ type DotGraphDep struct {
 	To   string
 }
 
-type DotOutput struct{}
+type DotFormatter struct{}
 
-func (do DotOutput) Format(s []model.Server, w io.Writer) (string, error) {
+func NewDotFormatter() DotFormatter {
+	return DotFormatter{}
+}
+
+func (DotFormatter) Format(s []model.Server, w http.ResponseWriter) {
 	dg := newDotGraph(s)
+	w.Header().Add("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
 	funcs := template.FuncMap{"join": strings.Join}
 	tpl, err := template.New("test").Funcs(funcs).Parse(dotTpl)
 	if err != nil {
-		return "", fmt.Errorf("error while parsing template: %w", err)
+		http.Error(w, fmt.Sprintf("error while parsing template: %v", err), http.StatusInternalServerError)
+		return
 	}
 	if err := tpl.Execute(w, dg); err != nil {
-		return "", fmt.Errorf("error while applying template: %w", err)
+		http.Error(w, fmt.Sprintf("error while applying template: %v", err), http.StatusInternalServerError)
+		return
 	}
-	return "text/plain", nil
+	return
 }
 
 func newDotGraph(s []model.Server) DotGraph {
@@ -49,8 +57,8 @@ func newDotGraph(s []model.Server) DotGraph {
 	identifierToHost := make(map[string]string)
 	for _, curS := range s {
 		hostnameToServer[curS.Hostname] = model.Server{
-			Hostname:     curS.Hostname,
-			IPs:          curS.IPs,
+			Hostname: curS.Hostname,
+			IPs:      curS.IPs,
 		}
 		identifierToHost[curS.Hostname] = curS.Hostname
 		for _, curD := range curS.IPs {

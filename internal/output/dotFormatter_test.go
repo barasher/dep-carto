@@ -1,9 +1,11 @@
 package output
 
 import (
-	"bytes"
 	"github.com/barasher/dep-carto/internal/model"
 	"github.com/stretchr/testify/assert"
+	"net/http"
+	"net/http/httptest"
+	"strings"
 	"testing"
 )
 
@@ -25,12 +27,10 @@ func TestBuildDotGraph(t *testing.T) {
 	assert.ElementsMatch(t, expDep, dg.Dependencies)
 }
 
-func TestDotFormat(t *testing.T) {
-	buf := bytes.Buffer{}
-	ct, err := DotOutput{}.Format(generateServers(), &buf)
-	assert.Nil(t, err)
-	assert.Equal(t, "text/plain", ct)
-	t.Logf("%v", buf.String())
-	assert.Fail(t, "aaaa")
+func TestDotFormatter(t *testing.T) {
+	rec := httptest.NewRecorder()
+	NewDotFormatter().Format(generateServers(), rec)
+	contentType := rec.Header().Get("Content-Type")
+	assert.Truef(t, strings.HasPrefix(contentType, "text/plain" ), "got: %w", contentType)
+	assert.Equal(t, http.StatusOK, rec.Code)
 }
-

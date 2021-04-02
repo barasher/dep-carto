@@ -3,10 +3,18 @@ package server
 import (
 	"context"
 	"encoding/json"
+	"fmt"
 	"github.com/barasher/dep-carto/internal/model"
+	"github.com/barasher/dep-carto/internal/output"
 	"github.com/rs/zerolog/log"
 	"net/http"
 	"time"
+)
+
+const (
+	jsonFormat    = "json"
+	dotFormat     = "dot"
+	defaultFormat = jsonFormat
 )
 
 type getHandler struct {
@@ -25,14 +33,56 @@ func (h getHandler) Method() string {
 	return http.MethodGet
 }
 
-func (h getHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	since, found := r.URL.Query()["since"]
-	ctx := context.Background()
-	if found {
-		h.getSince(ctx, w, since[0])
-	} else {
-		h.getAll(ctx, w)
+func (getHandler) format(r *http.Request) string {
+	if f, found := r.URL.Query()["format"]; found {
+		return f[0]
 	}
+	return defaultFormat
+}
+
+func (h getHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	ctx := context.Background()
+
+	var s []model.Server
+	var err error
+	since, found := r.URL.Query()["since"]
+	if found { // since
+		since, err := time.ParseDuration(since[0])
+		if err != nil {
+			err = fmt.Errorf("error while parsing duration %v: %w", since, err)
+			log.Error().Msgf("%v", err)
+			http.Error(w, err.Error(), http.StatusBadRequest)
+			return
+		}
+		if s, err = h.model.GetSince(ctx, since); err != nil {
+			err = fmt.Errorf("error while getting servers since %v: %w", since, err)
+			log.Error().Msgf("%v", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	} else { // all
+		if s, err = h.model.GetAll(ctx); err != nil {
+			err = fmt.Errorf("error while getting all servers: %w", err)
+			log.Error().Msgf("%v", err)
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+
+	var f output.Formatter
+	switch fStr := h.format(r); fStr {
+	case jsonFormat:
+		f = output.NewJSONFormatter()
+	case dotFormat:
+		f = output.NewDotFormatter()
+	default:
+		err = fmt.Errorf("unsupported output format (%v): %w", fStr, err)
+		log.Error().Msgf("%v", err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	f.Format(s, w)
+
 }
 
 func (h getHandler) getAll(ctx context.Context, w http.ResponseWriter) {
@@ -56,6 +106,8 @@ func (h getHandler) getSince(ctx context.Context, w http.ResponseWriter, dur str
 		log.Error().Msgf("Error while getting servers since %v: %v", dur, err)
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 	}
+	// format
+
 	json.NewEncoder(w).Encode(s)
 	w.WriteHeader(http.StatusOK)
 }
