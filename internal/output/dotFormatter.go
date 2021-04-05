@@ -3,10 +3,12 @@ package output
 import (
 	_ "embed"
 	"fmt"
-	"github.com/barasher/dep-carto/internal/model"
+	"io"
 	"net/http"
 	"strings"
 	"text/template"
+
+	"github.com/barasher/dep-carto/internal/model"
 )
 
 //go:embed dotTemplate.tpl
@@ -29,18 +31,24 @@ func NewDotFormatter() DotFormatter {
 	return DotFormatter{}
 }
 
-func (DotFormatter) Format(s []model.Server, w http.ResponseWriter) {
+func (DotFormatter) FormatToWriter(s []model.Server, w io.Writer) error {
 	dg := newDotGraph(s)
-	w.Header().Add("Content-Type", "text/plain")
-	w.WriteHeader(http.StatusOK)
 	funcs := template.FuncMap{"join": strings.Join}
 	tpl, err := template.New("test").Funcs(funcs).Parse(dotTpl)
 	if err != nil {
-		http.Error(w, fmt.Sprintf("error while parsing template: %v", err), http.StatusInternalServerError)
-		return
+		return fmt.Errorf("error while parsing template: %w", err)
 	}
 	if err := tpl.Execute(w, dg); err != nil {
-		http.Error(w, fmt.Sprintf("error while applying template: %v", err), http.StatusInternalServerError)
+		return fmt.Errorf("error while applying template: %w", err)
+	}
+	return nil
+}
+
+func (d DotFormatter) Format(s []model.Server, w http.ResponseWriter) {
+	w.Header().Add("Content-Type", "text/plain")
+	w.WriteHeader(http.StatusOK)
+	if err := d.FormatToWriter(s, w); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 	return
