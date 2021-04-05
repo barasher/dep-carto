@@ -1,16 +1,24 @@
 package parser
 
 import (
-	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestCrawlXml(t *testing.T) {
 	f, err := os.Open("../../testdata/samplefiles/a.xml")
 	assert.Nil(t, err)
 	defer f.Close()
-	got, err := NewXmlParser(refExtractorMock{}).Parse(f)
+	re, err := NewRefExtractor(WithSuffix(".acme"))
 	assert.Nil(t, err)
-	assert.ElementsMatch(t, got, []string{"a", "b", "c"})
+	got, err := NewXmlParser(re).Parse(f)
+	assert.Nil(t, err)
+	exp := []string{
+		"a.acme",
+		"b.acme",
+		"c.acme",
+	}
+	assert.ElementsMatch(t, exp, got)
 }

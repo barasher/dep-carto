@@ -1,4 +1,7 @@
 <rootNode>
+    <childNode childAtt1="a.acme" childAdd2="b.acme">
+        <grandChildNode>c.acme</grandChildNode>
+    </childNode>
     <childNode childAtt1="a" childAdd2="b">
         <grandChildNode>c</grandChildNode>
     </childNode>

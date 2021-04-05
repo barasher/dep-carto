@@ -1,16 +1,25 @@
 package parser
 
 import (
-	"github.com/stretchr/testify/assert"
 	"os"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestCrawlJson(t *testing.T) {
 	f, err := os.Open("../../testdata/samplefiles/a.json")
 	assert.Nil(t, err)
 	defer f.Close()
-	got, err := NewJsonParser(refExtractorMock{}).Parse(f)
+	re, err := NewRefExtractor(WithSuffix(".acme"))
 	assert.Nil(t, err)
-	assert.ElementsMatch(t, got, []string{"a", "b", "c", "d", "e", "f", "g", "h", "i"})
+	got, err := NewJsonParser(re).Parse(f)
+	assert.Nil(t, err)
+	exp := []string{
+		"c.acme",
+		"e.acme",
+		"f.acme",
+		"i.acme",
+	}
+	assert.ElementsMatch(t, exp, got)
 }
