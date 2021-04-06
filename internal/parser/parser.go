@@ -7,4 +7,3 @@ import (
 type Parser interface {
 	Parse(in io.Reader) ([]string, error)
 }
-

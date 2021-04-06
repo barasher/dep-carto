@@ -18,12 +18,12 @@ func generateServers() []model.Server {
 		Dependencies: []string{"s3.domain"},
 	}
 	s2 := model.Server{
-		Hostname:     "s2.domain",
-		IPs:          []string{"ip2"},
+		Hostname: "s2.domain",
+		IPs:      []string{"ip2"},
 	}
 	s3 := model.Server{
-		Hostname:     "s3.domain",
-		IPs:          []string{"ip3"},
+		Hostname: "s3.domain",
+		IPs:      []string{"ip3"},
 	}
 	return []model.Server{s1a, s1b, s2, s3}
 }
