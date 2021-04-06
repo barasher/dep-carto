@@ -4,16 +4,18 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/http"
+	"time"
+
 	"github.com/barasher/dep-carto/internal/model"
 	"github.com/barasher/dep-carto/internal/output"
 	"github.com/rs/zerolog/log"
-	"net/http"
-	"time"
 )
 
 const (
 	jsonFormat    = "json"
 	dotFormat     = "dot"
+	jpgFormat     = "jpg"
 	defaultFormat = jsonFormat
 )
 
@@ -75,6 +77,8 @@ func (h getHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		f = output.NewJSONFormatter()
 	case dotFormat:
 		f = output.NewDotFormatter()
+	case jpgFormat:
+		f = output.NewJpgFormatter()
 	default:
 		err = fmt.Errorf("unsupported output format (%v): %w", fStr, err)
 		log.Error().Msgf("%v", err)
