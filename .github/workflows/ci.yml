@@ -1,4 +1,4 @@
-name: DepCartoCI
+name: Dep-Carto
 on: push
 jobs:
   build:
@@ -9,9 +9,10 @@ jobs:
       - name: Setup Go
         uses: actions/setup-go@v2
         with:
-          go-version: '1.16.2'
+          go-version: '1.16.3'
       - name: Environment dependencies
-        run: |
-          go get -v
+        run: go get -v
       - name: Tests
-        run: go test ./...
+        run: go test -coverprofile=coverage.txt -covermode=atomic ./...
+      - name: Coverage publication
+        run: bash <(curl -s https://codecov.io/bash)
