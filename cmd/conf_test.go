@@ -1,8 +1,9 @@
 package cmd
 
 import (
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestLoadConf(t *testing.T) {
@@ -10,6 +11,9 @@ func TestLoadConf(t *testing.T) {
 	assert.Nil(t, err)
 	assert.Equal(t, uint(123), c.Server.Port)
 	assert.Equal(t, "memory", c.Server.StorageType)
+	assert.Equal(t, "u", c.Crawler.ServerURL)
+	assert.ElementsMatch(t, []string{"s1", "s2"}, c.Crawler.Suffixes)
+	assert.ElementsMatch(t, []string{"i1", "i2"}, c.Crawler.Inputs)
 
 	_, err = loadConf("nonExistingFile")
 	assert.NotNil(t, err)

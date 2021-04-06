@@ -2,5 +2,10 @@
   "server": {
     "port": 123,
     "storage": "memory"
+  },
+  "crawler": {
+    "serverURL": "u",
+	"suffixes": ["s1", "s2"]	,
+	"inputs": ["i1", "i2"]
   }
 }

@@ -14,7 +14,14 @@ const (
 )
 
 type Conf struct {
-	Server ServerConf `json:"server"`
+	Server  ServerConf  `json:"server"`
+	Crawler CrawlerConf `json:"crawler"`
+}
+
+type CrawlerConf struct {
+	ServerURL string   `json:"serverUrl"`
+	Suffixes  []string `json:"suffixes"`
+	Inputs    []string `json:"inputs"`
 }
 
 type ServerConf struct {

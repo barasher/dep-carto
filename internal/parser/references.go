@@ -16,9 +16,9 @@ type RefExtractor struct {
 	regexps []*regexp.Regexp
 }
 
-type refExtractorOption func(extractor *RefExtractor) error
+type RefExtractorOption func(extractor *RefExtractor) error
 
-func NewRefExtractor(opts ...refExtractorOption) (*RefExtractor, error) {
+func NewRefExtractor(opts ...RefExtractorOption) (*RefExtractor, error) {
 	refExt := &RefExtractor{}
 	ipRe, err := regexp.Compile(ipRegexp)
 	if err != nil {
@@ -34,7 +34,7 @@ func NewRefExtractor(opts ...refExtractorOption) (*RefExtractor, error) {
 	return refExt, nil
 }
 
-func WithSuffix(s string) refExtractorOption {
+func WithSuffix(s string) RefExtractorOption {
 	return func(refExt *RefExtractor) error {
 		suffixRe := s
 		for _, v := range userSuffixOverride {

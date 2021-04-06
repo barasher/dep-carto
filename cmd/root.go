@@ -1,9 +1,10 @@
 package cmd
 
 import (
+	"os"
+
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
-	"os"
 )
 
 const (
@@ -17,7 +18,8 @@ var (
 		Use:   "dep-carto",
 		Short: "Dependency cartographer",
 	}
-	confFile string
+	confFile    string
+	inputsParam []string
 )
 
 func Execute() {
