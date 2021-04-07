@@ -5,12 +5,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"github.com/barasher/dep-carto/internal/model"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
+
+	"github.com/barasher/dep-carto/internal/model"
+	"github.com/stretchr/testify/assert"
 )
 
 type modelMock struct {
@@ -90,7 +91,7 @@ func TestServer(t *testing.T) {
 	assert.Equal(t, http.StatusNoContent, r.StatusCode)
 
 	// get
-	u = fmt.Sprintf("%v/server", h.URL)
+	u = fmt.Sprintf("%v/servers", h.URL)
 	r, err = http.Get(u)
 	assert.Nil(t, err)
 	assert.Equal(t, http.StatusOK, r.StatusCode)
@@ -100,7 +101,7 @@ func TestServer(t *testing.T) {
 	assert.Contains(t, servers, elt)
 
 	// clear
-	u = fmt.Sprintf("%v/server", h.URL)
+	u = fmt.Sprintf("%v/servers", h.URL)
 	req, err := http.NewRequest(http.MethodDelete, u, nil)
 	assert.Nil(t, err)
 	c := http.Client{Timeout: time.Second}
@@ -109,7 +110,7 @@ func TestServer(t *testing.T) {
 	assert.Equal(t, http.StatusNoContent, r.StatusCode)
 
 	// get (expected empty)
-	u = fmt.Sprintf("%v/server", h.URL)
+	u = fmt.Sprintf("%v/servers", h.URL)
 	r, err = http.Get(u)
 	assert.Nil(t, err)
 	assert.Equal(t, http.StatusOK, r.StatusCode)

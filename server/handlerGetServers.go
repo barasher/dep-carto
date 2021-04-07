@@ -28,7 +28,7 @@ func NewGetHandler(m model.Model) getHandler {
 }
 
 func (h getHandler) Path() string {
-	return "/server"
+	return "/servers"
 }
 
 func (h getHandler) Method() string {

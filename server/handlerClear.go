@@ -2,9 +2,10 @@ package server
 
 import (
 	"context"
+	"net/http"
+
 	"github.com/barasher/dep-carto/internal/model"
 	"github.com/rs/zerolog/log"
-	"net/http"
 )
 
 type clearHandler struct {
@@ -16,7 +17,7 @@ func NewClearHandler(m model.Model) clearHandler {
 }
 
 func (h clearHandler) Path() string {
-	return "/server"
+	return "/servers"
 }
 
 func (h clearHandler) Method() string {
