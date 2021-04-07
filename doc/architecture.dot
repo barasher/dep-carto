@@ -1,0 +1,17 @@
+digraph g {
+
+graph [
+rankdir = "LR"
+];
+
+"Frontend application 1" -> "Backend application 1"
+
+"Backend application 1" -> "Database"
+"Backend application 2" -> "Database"
+
+"Frontend application 1" -> "Elasticsearch"
+"Backend application 1" -> "Elasticsearch"
+"Backend application 2" -> "Elasticsearch"
+"Database" -> "Elasticsearch"
+
+}
