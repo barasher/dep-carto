@@ -3,13 +3,14 @@ package server
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/barasher/dep-carto/internal/model"
-	"github.com/gorilla/mux"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
+
+	"github.com/barasher/dep-carto/internal/model"
+	"github.com/gorilla/mux"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestGetHandler_All_Nominal(t *testing.T) {
@@ -48,7 +49,7 @@ func TestGetHandler_All_Error(t *testing.T) {
 
 func TestGetHandler_Since_Nominal(t *testing.T) {
 	s := []model.Server{model.Server{Hostname: "h"}}
-	m := (&modelMock{}).MockGetSince(s, nil)
+	m := (&modelMock{}).MockGetAllSince(s, nil)
 	h := NewGetHandler(m)
 	req, err := http.NewRequest(h.Method(), h.Path()+"?since=3600s", nil)
 	if err != nil {
@@ -67,7 +68,7 @@ func TestGetHandler_Since_Nominal(t *testing.T) {
 }
 
 func TestGetHandler_Since_Error(t *testing.T) {
-	m := (&modelMock{}).MockGetSince(nil, fmt.Errorf("err"))
+	m := (&modelMock{}).MockGetAllSince(nil, fmt.Errorf("err"))
 	h := NewGetHandler(m)
 	req, err := http.NewRequest(h.Method(), h.Path()+"?since=3600s", nil)
 	if err != nil {
@@ -82,7 +83,7 @@ func TestGetHandler_Since_Error(t *testing.T) {
 }
 
 func TestGetHandler_Since_DurationParseError(t *testing.T) {
-	m := (&modelMock{}).MockGetSince(nil, fmt.Errorf("err"))
+	m := (&modelMock{}).MockGetAllSince(nil, fmt.Errorf("err"))
 	h := NewGetHandler(m)
 	req, err := http.NewRequest(h.Method(), h.Path()+"?since=blabla", nil)
 	if err != nil {

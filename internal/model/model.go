@@ -16,6 +16,6 @@ type Server struct {
 type Model interface {
 	Add(ctx context.Context, s Server) error
 	GetAll(ctx context.Context) ([]Server, error)
-	GetSince(ctx context.Context, d time.Duration) ([]Server, error)
+	GetAllSince(ctx context.Context, d time.Duration) ([]Server, error)
 	Clear(ctx context.Context) error
 }

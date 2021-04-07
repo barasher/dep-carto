@@ -3,10 +3,11 @@ package model
 import (
 	"context"
 	"encoding/json"
-	"github.com/stretchr/testify/assert"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestJSON(t *testing.T) {
@@ -145,12 +146,12 @@ func testSince(t *testing.T, m Model) {
 	assert.Len(t, servers, 1)
 
 	// check -2d
-	servers, err = m.GetSince(context.Background(), 48*time.Hour)
+	servers, err = m.GetAllSince(context.Background(), 48*time.Hour)
 	assert.Nil(t, err)
 	assert.Len(t, servers, 1)
 
 	// check -1h
-	servers, err = m.GetSince(context.Background(), time.Hour)
+	servers, err = m.GetAllSince(context.Background(), time.Hour)
 	assert.Nil(t, err)
 	assert.Len(t, servers, 0)
 }

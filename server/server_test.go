@@ -53,13 +53,13 @@ func (m *modelMock) GetAll(ctx context.Context) ([]model.Server, error) {
 	return m.getAll.servers, m.getAll.err
 }
 
-func (m *modelMock) MockGetSince(s []model.Server, err error) *modelMock {
+func (m *modelMock) MockGetAllSince(s []model.Server, err error) *modelMock {
 	m.getSince.outServers = s
 	m.getSince.outErr = err
 	return m
 }
 
-func (m *modelMock) GetSince(ctx context.Context, d time.Duration) ([]model.Server, error) {
+func (m *modelMock) GetAllSince(ctx context.Context, d time.Duration) ([]model.Server, error) {
 	m.getSince.inDuration = d
 	return m.getSince.outServers, m.getSince.outErr
 }

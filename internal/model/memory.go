@@ -30,7 +30,7 @@ func (m *memoryModel) GetAll(ctx context.Context) ([]Server, error) {
 	return m.servers, nil
 }
 
-func (m *memoryModel) GetSince(ctx context.Context, d time.Duration) ([]Server, error) {
+func (m *memoryModel) GetAllSince(ctx context.Context, d time.Duration) ([]Server, error) {
 	limit := time.Now().Add(-d)
 	var s []Server
 	for _, curS := range m.servers {
