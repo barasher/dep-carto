@@ -20,7 +20,7 @@ Which components depends on Elasticsearch ? Which components will be impacted if
 
 Once dependencies crawled, `dep-carto` can build this kind representation :
 
-![representation](doc/representation.jpg)
+![representation](doc/out.jpg)
 
 ## Getting `dep-carto`
 
