@@ -21,8 +21,9 @@ type DotGraph struct {
 }
 
 type DotGraphDep struct {
-	From string
-	To   string
+	From  string
+	To    string
+	Label string
 }
 
 type DotFormatter struct{}
@@ -81,10 +82,10 @@ func newDotGraph(s []model.Server) DotGraph {
 	for _, curS := range s {
 		for _, curD := range curS.Dependencies {
 			if ref, found := identifierToHost[curD.Resource]; found {
-				dg.Dependencies = append(dg.Dependencies, DotGraphDep{curS.Hostname, ref})
+				dg.Dependencies = append(dg.Dependencies, DotGraphDep{curS.Hostname, ref, curD.Label})
 			} else {
 				dg.ExternalServers = append(dg.ExternalServers, curD.Resource)
-				dg.Dependencies = append(dg.Dependencies, DotGraphDep{curS.Hostname, curD.Resource})
+				dg.Dependencies = append(dg.Dependencies, DotGraphDep{curS.Hostname, curD.Resource, curD.Label})
 			}
 		}
 	}

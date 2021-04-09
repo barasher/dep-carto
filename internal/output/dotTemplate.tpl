@@ -16,7 +16,7 @@ rankdir = "LR"
 {{end}}
 
 {{range .Dependencies}}
-"{{.From}}" -> "{{.To}}"
+"{{.From}}" -> "{{.To}}" {{if ne .Label ""}}[label="{{.Label}}"]{{end}}
 {{end}}
 
 }

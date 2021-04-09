@@ -10,8 +10,8 @@ func generateServers() []model.Server {
 		Key:      "a",
 		IPs:      []string{"ip1a", "ip1b"},
 		Dependencies: []model.Dependency{
-			{Resource: "ip2"},
-			{Resource: "s.otherdomain"},
+			{Resource: "ip2", Label: "Lip2"},
+			{Resource: "s.otherdomain", Label: "Ls.otherdomain"},
 		},
 	}
 	s1b := model.Server{
@@ -19,7 +19,7 @@ func generateServers() []model.Server {
 		Key:      "b",
 		IPs:      []string{"ip1a", "ip1b"},
 		Dependencies: []model.Dependency{
-			{Resource: "s3.domain"},
+			{Resource: "s3.domain", Label: "Ls3.domain"},
 		},
 	}
 	s2 := model.Server{

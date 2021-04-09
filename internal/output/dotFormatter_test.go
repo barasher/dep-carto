@@ -1,12 +1,13 @@
 package output
 
 import (
-	"github.com/barasher/dep-carto/internal/model"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/barasher/dep-carto/internal/model"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestBuildDotGraph(t *testing.T) {
@@ -20,9 +21,9 @@ func TestBuildDotGraph(t *testing.T) {
 	assert.ElementsMatch(t, expServ, dg.Servers)
 	assert.ElementsMatch(t, []string{"s.otherdomain"}, dg.ExternalServers)
 	expDep := []DotGraphDep{
-		{"s1.domain", "s2.domain"},
-		{"s1.domain", "s.otherdomain"},
-		{"s1.domain", "s3.domain"},
+		{"s1.domain", "s2.domain", "Lip2"},
+		{"s1.domain", "s.otherdomain", "Ls.otherdomain"},
+		{"s1.domain", "s3.domain", "Ls3.domain"},
 	}
 	assert.ElementsMatch(t, expDep, dg.Dependencies)
 }

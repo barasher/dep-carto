@@ -5,6 +5,11 @@ rankdir = "LR"
 ];
 
 
+"es.acme.com"[
+    label="es.acme.com|10.1.1.5"
+    shape = "record"
+]
+
 "front1.acme.com"[
     label="front1.acme.com|10.1.1.1"
     shape = "record"
@@ -25,28 +30,25 @@ rankdir = "LR"
     shape = "record"
 ]
 
-"es.acme.com"[
-    label="es.acme.com|10.1.1.5"
-    shape = "record"
-]
 
 
 
 
+"front1.acme.com" -> "back1.acme.com" [label="auth"]
 
-"front1.acme.com" -> "back1.acme.com"
+"front1.acme.com" -> "back2.acme.com" [label="crud"]
 
-"front1.acme.com" -> "es.acme.com"
+"front1.acme.com" -> "es.acme.com" [label="logs"]
 
-"back1.acme.com" -> "db.acme.com"
+"back1.acme.com" -> "db.acme.com" 
 
-"back1.acme.com" -> "es.acme.com"
+"back1.acme.com" -> "es.acme.com" [label="logs"]
 
-"back2.acme.com" -> "db.acme.com"
+"back2.acme.com" -> "db.acme.com" 
 
-"back2.acme.com" -> "es.acme.com"
+"back2.acme.com" -> "es.acme.com" [label="logs"]
 
-"db.acme.com" -> "es.acme.com"
+"db.acme.com" -> "es.acme.com" [label="logs"]
 
 
 }
