@@ -2,11 +2,14 @@ package server
 
 import (
 	"fmt"
-	"github.com/barasher/dep-carto/internal/model"
-	"github.com/gorilla/mux"
-	"github.com/rs/zerolog/log"
 	"net/http"
 	"time"
+
+	"github.com/barasher/dep-carto/internal/model"
+	"github.com/gorilla/mux"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+	"github.com/rs/zerolog/log"
 )
 
 type Server struct {
@@ -21,14 +24,27 @@ func NewServer(model model.Model, port uint) (*Server, error) {
 		port:  port,
 	}
 	s.router = mux.NewRouter()
-	registerHandler(s.router, NewAddHandler(model))
-	registerHandler(s.router, NewClearHandler(model))
-	registerHandler(s.router, NewGetHandler(model))
+	registerHandler(s.router, NewAddHandler(model), "add")
+	registerHandler(s.router, NewClearHandler(model), "clear")
+	registerHandler(s.router, NewGetHandler(model), "get")
+	s.router.Handle("/metrics", promhttp.Handler())
 	return s, nil
 }
 
-func registerHandler(r *mux.Router, h handlerInterface) {
-	r.Handle(h.Path(), h).Methods(h.Method())
+func registerHandler(r *mux.Router, h handlerInterface, promKey string) {
+	metric := prometheus.NewHistogramVec(
+		prometheus.HistogramOpts{
+			Name:        fmt.Sprintf("depcarto_%v_request_duration_seconds", promKey),
+			Help:        fmt.Sprintf("Histogram concerning %v request duration (seconds)", promKey),
+			Buckets:     []float64{.0025, .005, .01, .025, .05, .1},
+			ConstLabels: prometheus.Labels{"method": h.Method(), "path": h.Path()},
+		},
+		[]string{},
+	)
+	prometheus.Unregister(metric)
+	prometheus.MustRegister(metric)
+	h2 := promhttp.InstrumentHandlerDuration(metric, h)
+	r.HandleFunc(h.Path(), h2).Methods(h.Method())
 }
 
 type handlerInterface interface {

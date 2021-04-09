@@ -10,5 +10,5 @@ curl -s -d'@servers/es.json' localhost:8088/server -X POST
 curl -s localhost:8088/servers > out.json
 curl -s localhost:8088/servers?format=dot > out.dot
 curl -s localhost:8088/servers?format=jpg > out.jpg
-kill $pid
+#kill $pid
 rm depcarto
