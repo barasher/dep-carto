@@ -2,8 +2,9 @@ package cmd
 
 import (
 	"fmt"
+
 	"github.com/barasher/dep-carto/internal/model"
-	"github.com/barasher/dep-carto/server"
+	"github.com/barasher/dep-carto/internal/server"
 	"github.com/spf13/cobra"
 )
 
