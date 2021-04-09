@@ -6,11 +6,16 @@ import (
 )
 
 type Server struct {
-	Hostname     string    `json:"hostname"`
-	Key          string    `json:"key"`
-	IPs          []string  `json:"ips"`
-	Dependencies []string  `json:"dependencies"`
-	LastUpdate   time.Time `json:"lastUpdate"`
+	Hostname     string       `json:"hostname"`
+	Key          string       `json:"key"`
+	IPs          []string     `json:"ips"`
+	Dependencies []Dependency `json:"dependencies"`
+	LastUpdate   time.Time    `json:"lastUpdate"`
+}
+
+type Dependency struct {
+	Resource string `json:"resource"`
+	Label    string `json:"label"`
 }
 
 type Model interface {

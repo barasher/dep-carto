@@ -155,10 +155,14 @@ func (c Crawler) parseFile(f string) ([]string, error) {
 }
 
 func (c Crawler) buildServer(deps []string) model.Server {
+	d := make([]model.Dependency, len(deps))
+	for i, cur := range deps {
+		d[i] = model.Dependency{Resource: cur}
+	}
 	return model.Server{
 		Hostname:     c.hostname,
 		IPs:          c.ips,
-		Dependencies: deps,
+		Dependencies: d,
 		LastUpdate:   c.date,
 	}
 }

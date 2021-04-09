@@ -16,7 +16,10 @@ func TestJSON(t *testing.T) {
 		  "hostname": "h",
 		  "key": "k",
 		  "ips": ["i1", "i2"],
-		  "dependencies": ["d1", "d2"],
+		  "dependencies": [
+			{ "resource": "d1", "label": "l1" },
+			{ "resource": "d2", "label": "l2" }
+		  ],
 		  "lastUpdate": "2001-02-03T04:05:06Z"
 		}
 		`
@@ -25,7 +28,11 @@ func TestJSON(t *testing.T) {
 	assert.Equal(t, "h", s.Hostname)
 	assert.Equal(t, "k", s.Key)
 	assert.ElementsMatch(t, []string{"i1", "i2"}, s.IPs)
-	assert.ElementsMatch(t, []string{"d1", "d2"}, s.Dependencies)
+	expDeps := []Dependency{
+		{Resource: "d1", Label: "l1"},
+		{Resource: "d2", Label: "l2"},
+	}
+	assert.ElementsMatch(t, expDeps, s.Dependencies)
 	expDate, err := time.Parse(time.RFC3339, "2001-02-03T04:05:06Z")
 	assert.Nil(t, err)
 	assert.Equal(t, expDate, s.LastUpdate)
@@ -33,11 +40,14 @@ func TestJSON(t *testing.T) {
 
 func TestMarshalingUnmarshaling(t *testing.T) {
 	s1 := Server{
-		Hostname:     "hh",
-		Key:          "k",
-		IPs:          []string{"i1", "i2"},
-		Dependencies: []string{"d1", "d2"},
-		LastUpdate:   getDay(t, "01"),
+		Hostname: "hh",
+		Key:      "k",
+		IPs:      []string{"i1", "i2"},
+		Dependencies: []Dependency{
+			{Resource: "d1", Label: "l1"},
+			{Resource: "d2", Label: "l2"},
+		},
+		LastUpdate: getDay(t, "01"),
 	}
 	b, err := json.Marshal(s1)
 	assert.Nil(t, err)
@@ -61,10 +71,13 @@ func testModelWorkflow(t *testing.T, m Model) {
 func testCreate(t *testing.T, m Model) {
 	// create first server (s1 - no key)
 	s1 := Server{
-		Hostname:     "h1",
-		IPs:          []string{"h1ip1", "h1ip2"},
-		Dependencies: []string{"d1", "d2"},
-		LastUpdate:   getDay(t, "01"),
+		Hostname: "h1",
+		IPs:      []string{"h1ip1", "h1ip2"},
+		Dependencies: []Dependency{
+			{Resource: "d1", Label: "l1"},
+			{Resource: "d2", Label: "l2"},
+		},
+		LastUpdate: getDay(t, "01"),
 	}
 	assert.Nil(t, m.Add(context.Background(), s1))
 	servers, err := m.GetAll(context.Background())
@@ -73,10 +86,12 @@ func testCreate(t *testing.T, m Model) {
 
 	// override server s1 - no key
 	s1 = Server{
-		Hostname:     "h1",
-		IPs:          []string{"h1ip1", "h1ip2"},
-		Dependencies: []string{"d1"},
-		LastUpdate:   getDay(t, "02"),
+		Hostname: "h1",
+		IPs:      []string{"h1ip1", "h1ip2"},
+		Dependencies: []Dependency{
+			{Resource: "d1", Label: "l1"},
+		},
+		LastUpdate: getDay(t, "02"),
 	}
 	assert.Nil(t, m.Add(context.Background(), s1))
 	servers, err = m.GetAll(context.Background())
@@ -85,10 +100,12 @@ func testCreate(t *testing.T, m Model) {
 
 	// create new server (s2 - no key)
 	s2 := Server{
-		Hostname:     "h2",
-		IPs:          []string{"h2ip1"},
-		Dependencies: []string{"d3"},
-		LastUpdate:   getDay(t, "03"),
+		Hostname: "h2",
+		IPs:      []string{"h2ip1"},
+		Dependencies: []Dependency{
+			{Resource: "d3", Label: "l3"},
+		},
+		LastUpdate: getDay(t, "03"),
 	}
 	assert.Nil(t, m.Add(context.Background(), s2))
 	servers, err = m.GetAll(context.Background())
@@ -97,11 +114,14 @@ func testCreate(t *testing.T, m Model) {
 
 	// create new server (s1 - key)
 	s1b := Server{
-		Hostname:     "h1",
-		Key:          "k",
-		IPs:          []string{"h1ip1", "h1ip2"},
-		Dependencies: []string{"d1", "d2"},
-		LastUpdate:   getDay(t, "04"),
+		Hostname: "h1",
+		Key:      "k",
+		IPs:      []string{"h1ip1", "h1ip2"},
+		Dependencies: []Dependency{
+			{Resource: "d1", Label: "l1"},
+			{Resource: "d2", Label: "l2"},
+		},
+		LastUpdate: getDay(t, "04"),
 	}
 	assert.Nil(t, m.Add(context.Background(), s1b))
 	servers, err = m.GetAll(context.Background())
@@ -112,11 +132,14 @@ func testCreate(t *testing.T, m Model) {
 func testDelete(t *testing.T, m Model) {
 	// create
 	s1 := Server{
-		Hostname:     "h1",
-		Key:          "bla",
-		IPs:          []string{"h1ip1", "h1ip2"},
-		Dependencies: []string{"d1", "d2"},
-		LastUpdate:   getDay(t, "01"),
+		Hostname: "h1",
+		Key:      "bla",
+		IPs:      []string{"h1ip1", "h1ip2"},
+		Dependencies: []Dependency{
+			{Resource: "d1", Label: "l1"},
+			{Resource: "d2", Label: "l2"},
+		},
+		LastUpdate: getDay(t, "01"),
 	}
 	assert.Nil(t, m.Add(context.Background(), s1))
 	servers, err := m.GetAll(context.Background())

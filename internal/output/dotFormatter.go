@@ -80,11 +80,11 @@ func newDotGraph(s []model.Server) DotGraph {
 
 	for _, curS := range s {
 		for _, curD := range curS.Dependencies {
-			if ref, found := identifierToHost[curD]; found {
+			if ref, found := identifierToHost[curD.Resource]; found {
 				dg.Dependencies = append(dg.Dependencies, DotGraphDep{curS.Hostname, ref})
 			} else {
-				dg.ExternalServers = append(dg.ExternalServers, curD)
-				dg.Dependencies = append(dg.Dependencies, DotGraphDep{curS.Hostname, curD})
+				dg.ExternalServers = append(dg.ExternalServers, curD.Resource)
+				dg.Dependencies = append(dg.Dependencies, DotGraphDep{curS.Hostname, curD.Resource})
 			}
 		}
 	}

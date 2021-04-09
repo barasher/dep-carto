@@ -22,9 +22,12 @@ func buildCrawler(t *testing.T, u string) Crawler {
 
 func TestBuildServer(t *testing.T) {
 	c := buildCrawler(t, "url")
-	deps := []string{"a", "b"}
-	s := c.buildServer(deps)
-	assert.ElementsMatch(t, deps, s.Dependencies)
+	s := c.buildServer([]string{"a", "b"})
+	expDeps := []model.Dependency{
+		{Resource: "a"},
+		{Resource: "b"},
+	}
+	assert.ElementsMatch(t, expDeps, s.Dependencies)
 	assert.NotZero(t, s.Hostname)
 	assert.True(t, len(s.IPs) > 0)
 	assert.NotZero(t, s.LastUpdate)
@@ -32,11 +35,14 @@ func TestBuildServer(t *testing.T) {
 
 func TestPushServer_Nominal(t *testing.T) {
 	s := model.Server{
-		Hostname:     "h",
-		IPs:          []string{"i1", "i2"},
-		Dependencies: []string{"d1", "d2"},
-		LastUpdate:   time.Now(),
-		Key:          "k",
+		Hostname: "h",
+		IPs:      []string{"i1", "i2"},
+		Dependencies: []model.Dependency{
+			{Resource: "d1", Label: "l1"},
+			{Resource: "d2", Label: "l2"},
+		},
+		LastUpdate: time.Now(),
+		Key:        "k",
 	}
 	server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		assert.Equal(t, "/server", req.URL.String())
@@ -77,13 +83,13 @@ func TestCrawl_Nominal(t *testing.T) {
 	postCount := 0
 	server := httptest.NewServer(http.HandlerFunc(func(rw http.ResponseWriter, req *http.Request) {
 		postCount++
-		expDeps := []string{
-			"c.acme",
-			"e.acme",
-			"f.acme",
-			"i.acme",
-			"a.acme",
-			"b.acme",
+		expDeps := []model.Dependency{
+			{Resource: "c.acme"},
+			{Resource: "e.acme"},
+			{Resource: "f.acme"},
+			{Resource: "i.acme"},
+			{Resource: "a.acme"},
+			{Resource: "b.acme"},
 		}
 		defer req.Body.Close()
 		var s2 model.Server

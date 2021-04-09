@@ -4,23 +4,27 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"github.com/barasher/dep-carto/internal/model"
-	"github.com/gorilla/mux"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
+
+	"github.com/barasher/dep-carto/internal/model"
+	"github.com/gorilla/mux"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestAddHandler_Nominal(t *testing.T) {
 	d, err := time.Parse(time.RFC3339, "2001-02-03T04:05:06Z")
 	s := model.Server{
-		Hostname:     "hh",
-		Key:          "k",
-		IPs:          []string{"i1", "i2"},
-		Dependencies: []string{"d1", "d2"},
-		LastUpdate:   d,
+		Hostname: "hh",
+		Key:      "k",
+		IPs:      []string{"i1", "i2"},
+		Dependencies: []model.Dependency{
+			{Resource: "d1"},
+			{Resource: "d2"},
+		},
+		LastUpdate: d,
 	}
 	b, err := json.Marshal(s)
 	assert.Nil(t, err)
