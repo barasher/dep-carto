@@ -1,0 +1,9 @@
+{
+  "hostname": "front1.acme.com",
+  "ips": ["10.1.1.1"],
+  "dependencies": [
+    { "resource": "back1.acme.com"},
+    { "resource": "es.acme.com", "label":"logs"}
+  ],
+  "lastUpdate": "2001-02-03T04:05:06Z"
+}

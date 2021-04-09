@@ -1,0 +1,5 @@
+{
+  "hostname": "es.acme.com",
+  "ips": ["10.1.1.5"],
+  "lastUpdate": "2001-02-03T04:05:06Z"
+}

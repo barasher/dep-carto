@@ -1,0 +1,8 @@
+{
+  "hostname": "db.acme.com",
+  "ips": ["10.1.1.4"],
+  "dependencies": [
+    { "resource": "es.acme.com", "label":"logs"}
+  ],
+  "lastUpdate": "2001-02-03T04:05:06Z"
+}
