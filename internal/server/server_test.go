@@ -27,6 +27,20 @@ type modelMock struct {
 	clear struct {
 		err error
 	}
+	getDepending struct {
+		inIdent string
+		inDepth *int
+		inSince *time.Duration
+		servers []model.Server
+		err     error
+	}
+	getDependencies struct {
+		inIdent string
+		inDepth *int
+		inSince *time.Duration
+		servers []model.Server
+		err     error
+	}
 }
 
 func (m *modelMock) MockAdd(err error) *modelMock {
@@ -57,6 +71,32 @@ func (m *modelMock) MockClear(err error) *modelMock {
 
 func (m *modelMock) Clear(ctx context.Context) error {
 	return m.clear.err
+}
+
+func (m *modelMock) MockGetDepending(s []model.Server, err error) *modelMock {
+	m.getDepending.servers = s
+	m.getDepending.err = err
+	return m
+}
+
+func (m *modelMock) GetDepending(ctx context.Context, ident string, depth *int, since *time.Duration) ([]model.Server, error) {
+	m.getDepending.inIdent = ident
+	m.getDepending.inDepth = depth
+	m.getDepending.inSince = since
+	return m.getDepending.servers, m.getDepending.err
+}
+
+func (m *modelMock) MockGetDependencies(s []model.Server, err error) *modelMock {
+	m.getDependencies.servers = s
+	m.getDependencies.err = err
+	return m
+}
+
+func (m *modelMock) GetDependencies(ctx context.Context, ident string, depth *int, since *time.Duration) ([]model.Server, error) {
+	m.getDependencies.inIdent = ident
+	m.getDependencies.inDepth = depth
+	m.getDependencies.inSince = since
+	return m.getDependencies.servers, m.getDependencies.err
 }
 
 func TestServer(t *testing.T) {

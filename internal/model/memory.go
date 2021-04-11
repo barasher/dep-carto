@@ -44,3 +44,11 @@ func (m *memoryModel) Clear(ctx context.Context) error {
 	m.servers = []Server{}
 	return nil
 }
+
+func (m *memoryModel) GetDepending(ctx context.Context, ident string, depth *int, since *time.Duration) ([]Server, error) {
+	return []Server{}, nil
+}
+
+func (m *memoryModel) GetDependencies(ctx context.Context, ident string, depth *int, since *time.Duration) ([]Server, error) {
+	return []Server{}, nil
+}
