@@ -20,13 +20,9 @@ type modelMock struct {
 		outErr   error
 	}
 	getAll struct {
+		inSince *time.Duration
 		servers []model.Server
 		err     error
-	}
-	getSince struct {
-		inDuration time.Duration
-		outServers []model.Server
-		outErr     error
 	}
 	clear struct {
 		err error
@@ -49,19 +45,9 @@ func (m *modelMock) MockGetAll(s []model.Server, err error) *modelMock {
 	return m
 }
 
-func (m *modelMock) GetAll(ctx context.Context) ([]model.Server, error) {
+func (m *modelMock) GetAll(ctx context.Context, d *time.Duration) ([]model.Server, error) {
+	m.getAll.inSince = d
 	return m.getAll.servers, m.getAll.err
-}
-
-func (m *modelMock) MockGetAllSince(s []model.Server, err error) *modelMock {
-	m.getSince.outServers = s
-	m.getSince.outErr = err
-	return m
-}
-
-func (m *modelMock) GetAllSince(ctx context.Context, d time.Duration) ([]model.Server, error) {
-	m.getSince.inDuration = d
-	return m.getSince.outServers, m.getSince.outErr
 }
 
 func (m *modelMock) MockClear(err error) *modelMock {

@@ -20,7 +20,6 @@ type Dependency struct {
 
 type Model interface {
 	Add(ctx context.Context, s Server) error
-	GetAll(ctx context.Context) ([]Server, error)
-	GetAllSince(ctx context.Context, d time.Duration) ([]Server, error)
+	GetAll(ctx context.Context, d *time.Duration) ([]Server, error)
 	Clear(ctx context.Context) error
 }

@@ -55,14 +55,14 @@ func (h getHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, err.Error(), http.StatusBadRequest)
 			return
 		}
-		if s, err = h.model.GetAllSince(ctx, since); err != nil {
+		if s, err = h.model.GetAll(ctx, &since); err != nil {
 			err = fmt.Errorf("error while getting servers since %v: %w", since, err)
 			log.Error().Msgf("%v", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 	} else { // all
-		if s, err = h.model.GetAll(ctx); err != nil {
+		if s, err = h.model.GetAll(ctx, nil); err != nil {
 			err = fmt.Errorf("error while getting all servers: %w", err)
 			log.Error().Msgf("%v", err)
 			http.Error(w, err.Error(), http.StatusInternalServerError)

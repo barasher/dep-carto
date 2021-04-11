@@ -49,7 +49,7 @@ func TestGetHandler_All_Error(t *testing.T) {
 
 func TestGetHandler_Since_Nominal(t *testing.T) {
 	s := []model.Server{model.Server{Hostname: "h"}}
-	m := (&modelMock{}).MockGetAllSince(s, nil)
+	m := (&modelMock{}).MockGetAll(s, nil)
 	h := NewGetHandler(m)
 	req, err := http.NewRequest(h.Method(), h.Path()+"?since=3600s", nil)
 	if err != nil {
@@ -60,7 +60,7 @@ func TestGetHandler_Since_Nominal(t *testing.T) {
 	router.Handle(h.Path(), h)
 	router.ServeHTTP(rr, req)
 
-	assert.Equal(t, 3600*time.Second, m.getSince.inDuration)
+	assert.Equal(t, 3600*time.Second, *(m.getAll.inSince))
 	assert.Equal(t, http.StatusOK, rr.Code)
 	var got []model.Server
 	assert.Nil(t, json.Unmarshal(rr.Body.Bytes(), &got))
@@ -68,7 +68,7 @@ func TestGetHandler_Since_Nominal(t *testing.T) {
 }
 
 func TestGetHandler_Since_Error(t *testing.T) {
-	m := (&modelMock{}).MockGetAllSince(nil, fmt.Errorf("err"))
+	m := (&modelMock{}).MockGetAll(nil, fmt.Errorf("err"))
 	h := NewGetHandler(m)
 	req, err := http.NewRequest(h.Method(), h.Path()+"?since=3600s", nil)
 	if err != nil {
@@ -83,7 +83,7 @@ func TestGetHandler_Since_Error(t *testing.T) {
 }
 
 func TestGetHandler_Since_DurationParseError(t *testing.T) {
-	m := (&modelMock{}).MockGetAllSince(nil, fmt.Errorf("err"))
+	m := (&modelMock{}).MockGetAll(nil, fmt.Errorf("err"))
 	h := NewGetHandler(m)
 	req, err := http.NewRequest(h.Method(), h.Path()+"?since=blabla", nil)
 	if err != nil {

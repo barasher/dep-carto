@@ -80,7 +80,7 @@ func testCreate(t *testing.T, m Model) {
 		LastUpdate: getDay(t, "01"),
 	}
 	assert.Nil(t, m.Add(context.Background(), s1))
-	servers, err := m.GetAll(context.Background())
+	servers, err := m.GetAll(context.Background(), nil)
 	assert.Nil(t, err)
 	assert.ElementsMatch(t, []Server{s1}, servers)
 
@@ -94,7 +94,7 @@ func testCreate(t *testing.T, m Model) {
 		LastUpdate: getDay(t, "02"),
 	}
 	assert.Nil(t, m.Add(context.Background(), s1))
-	servers, err = m.GetAll(context.Background())
+	servers, err = m.GetAll(context.Background(), nil)
 	assert.Nil(t, err)
 	assert.ElementsMatch(t, []Server{s1}, servers)
 
@@ -108,7 +108,7 @@ func testCreate(t *testing.T, m Model) {
 		LastUpdate: getDay(t, "03"),
 	}
 	assert.Nil(t, m.Add(context.Background(), s2))
-	servers, err = m.GetAll(context.Background())
+	servers, err = m.GetAll(context.Background(), nil)
 	assert.Nil(t, err)
 	assert.ElementsMatch(t, []Server{s1, s2}, servers)
 
@@ -124,7 +124,7 @@ func testCreate(t *testing.T, m Model) {
 		LastUpdate: getDay(t, "04"),
 	}
 	assert.Nil(t, m.Add(context.Background(), s1b))
-	servers, err = m.GetAll(context.Background())
+	servers, err = m.GetAll(context.Background(), nil)
 	assert.Nil(t, err)
 	assert.ElementsMatch(t, []Server{s1, s2, s1b}, servers)
 }
@@ -142,7 +142,7 @@ func testDelete(t *testing.T, m Model) {
 		LastUpdate: getDay(t, "01"),
 	}
 	assert.Nil(t, m.Add(context.Background(), s1))
-	servers, err := m.GetAll(context.Background())
+	servers, err := m.GetAll(context.Background(), nil)
 	assert.Nil(t, err)
 	assert.NotEmpty(t, servers)
 
@@ -150,7 +150,7 @@ func testDelete(t *testing.T, m Model) {
 	assert.Nil(t, m.Clear(context.Background()))
 
 	// check
-	servers, err = m.GetAll(context.Background())
+	servers, err = m.GetAll(context.Background(), nil)
 	assert.Nil(t, err)
 	assert.Empty(t, servers)
 }
@@ -164,17 +164,19 @@ func testSince(t *testing.T, m Model) {
 		LastUpdate: time.Now().Add(-24 * time.Hour),
 	}
 	assert.Nil(t, m.Add(context.Background(), s))
-	servers, err := m.GetAll(context.Background())
+	servers, err := m.GetAll(context.Background(), nil)
 	assert.Nil(t, err)
 	assert.Len(t, servers, 1)
 
 	// check -2d
-	servers, err = m.GetAllSince(context.Background(), 48*time.Hour)
+	d := 48 * time.Hour
+	servers, err = m.GetAll(context.Background(), &d)
 	assert.Nil(t, err)
 	assert.Len(t, servers, 1)
 
 	// check -1h
-	servers, err = m.GetAllSince(context.Background(), time.Hour)
+	d = time.Hour
+	servers, err = m.GetAll(context.Background(), &d)
 	assert.Nil(t, err)
 	assert.Len(t, servers, 0)
 }

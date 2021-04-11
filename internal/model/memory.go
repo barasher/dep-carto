@@ -26,12 +26,11 @@ func (m *memoryModel) Add(ctx context.Context, server Server) error {
 	return nil
 }
 
-func (m *memoryModel) GetAll(ctx context.Context) ([]Server, error) {
-	return m.servers, nil
-}
-
-func (m *memoryModel) GetAllSince(ctx context.Context, d time.Duration) ([]Server, error) {
-	limit := time.Now().Add(-d)
+func (m *memoryModel) GetAll(ctx context.Context, d *time.Duration) ([]Server, error) {
+	if d == nil {
+		return m.servers, nil
+	}
+	limit := time.Now().Add(-*d)
 	var s []Server
 	for _, curS := range m.servers {
 		if !curS.LastUpdate.Before(limit) {
