@@ -20,7 +20,7 @@ type modelMock struct {
 		outErr   error
 	}
 	getAll struct {
-		inSince *time.Duration
+		inSince time.Duration
 		servers []model.Server
 		err     error
 	}
@@ -59,7 +59,7 @@ func (m *modelMock) MockGetAll(s []model.Server, err error) *modelMock {
 	return m
 }
 
-func (m *modelMock) GetAll(ctx context.Context, d *time.Duration) ([]model.Server, error) {
+func (m *modelMock) GetAll(ctx context.Context, d time.Duration) ([]model.Server, error) {
 	m.getAll.inSince = d
 	return m.getAll.servers, m.getAll.err
 }
@@ -107,7 +107,7 @@ func TestServer(t *testing.T) {
 	defer h.Close()
 
 	// create
-	elt := model.Server{Hostname: "host"}
+	elt := model.Server{Hostname: "host", LastUpdate: time.Now()}
 	b, err := json.Marshal(elt)
 	assert.Nil(t, err)
 	u := fmt.Sprintf("%v/server", h.URL)
@@ -124,7 +124,7 @@ func TestServer(t *testing.T) {
 	var servers []model.Server
 	assert.Nil(t, json.NewDecoder(r.Body).Decode(&servers))
 	defer r.Body.Close()
-	assert.Contains(t, servers, elt)
+	assert.Len(t, servers, 1)
 
 	// clear
 	u = fmt.Sprintf("%v/servers", h.URL)
@@ -143,4 +143,85 @@ func TestServer(t *testing.T) {
 	assert.Nil(t, json.NewDecoder(r.Body).Decode(&servers))
 	defer r.Body.Close()
 	assert.Len(t, servers, 0)
+}
+
+func TestFormat(t *testing.T) {
+	var tcs = []struct {
+		inTC     string
+		inSuffix string
+		expOk    bool
+		expType  string
+	}{
+		{"notProvided", "", true, "output.JSONFormatter"},
+		{"JPG", "format=JPG", true, "output.JpgFormatter"},
+		{"JSON", "format=JSON", true, "output.JSONFormatter"},
+		{"DOT", "format=DOT", true, "output.DotFormatter"},
+		{"blabla", "format=blabla", false, ""},
+	}
+	for _, tc := range tcs {
+		t.Run(tc.inTC, func(t *testing.T) {
+			u := fmt.Sprintf("http://www.google.com/?%v", tc.inSuffix)
+			r, err := http.NewRequest(http.MethodGet, u, nil)
+			assert.Nil(t, err)
+			f, err := formatter(r)
+			if tc.expOk {
+				assert.Nil(t, err)
+				assert.Equal(t, tc.expType, fmt.Sprintf("%T", f))
+			} else {
+				assert.NotNil(t, err)
+			}
+		})
+	}
+}
+
+func TestSince(t *testing.T) {
+	var tcs = []struct {
+		inTC     string
+		inSuffix string
+		expOk    bool
+		expOut   time.Duration
+	}{
+		{"notProvided", "", true, defaultSince},
+		{"1m", "since=1m", true, time.Minute},
+		{"blabla", "since=blabla", false, time.Minute},
+	}
+	for _, tc := range tcs {
+		t.Run(tc.inTC, func(t *testing.T) {
+			u := fmt.Sprintf("http://www.google.com/?%v", tc.inSuffix)
+			r, err := http.NewRequest(http.MethodGet, u, nil)
+			s, err := since(r)
+			if tc.expOk {
+				assert.Nil(t, err)
+				assert.Equal(t, tc.expOut, s)
+			} else {
+				assert.NotNil(t, err)
+			}
+		})
+	}
+}
+
+func TestDepth(t *testing.T) {
+	var tcs = []struct {
+		inTC     string
+		inSuffix string
+		expOk    bool
+		expOut   int
+	}{
+		{"notProvided", "", true, defaultDepth},
+		{"42", "depth=42", true, 42},
+		{"blabla", "depth=blabla", false, 0},
+	}
+	for _, tc := range tcs {
+		t.Run(tc.inTC, func(t *testing.T) {
+			u := fmt.Sprintf("http://www.google.com/?%v", tc.inSuffix)
+			r, err := http.NewRequest(http.MethodGet, u, nil)
+			s, err := depth(r)
+			if tc.expOk {
+				assert.Nil(t, err)
+				assert.Equal(t, tc.expOut, s)
+			} else {
+				assert.NotNil(t, err)
+			}
+		})
+	}
 }

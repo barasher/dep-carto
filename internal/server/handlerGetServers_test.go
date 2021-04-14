@@ -60,7 +60,7 @@ func TestGetHandler_Since_Nominal(t *testing.T) {
 	router.Handle(h.Path(), h)
 	router.ServeHTTP(rr, req)
 
-	assert.Equal(t, 3600*time.Second, *(m.getAll.inSince))
+	assert.Equal(t, 3600*time.Second, m.getAll.inSince)
 	assert.Equal(t, http.StatusOK, rr.Code)
 	var got []model.Server
 	assert.Nil(t, json.Unmarshal(rr.Body.Bytes(), &got))

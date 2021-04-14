@@ -3,13 +3,25 @@ package server
 import (
 	"fmt"
 	"net/http"
+	"strconv"
+	"strings"
 	"time"
 
 	"github.com/barasher/dep-carto/internal/model"
+	"github.com/barasher/dep-carto/internal/output"
 	"github.com/gorilla/mux"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/rs/zerolog/log"
+)
+
+const (
+	jsonFormat    = "json"
+	dotFormat     = "dot"
+	jpgFormat     = "jpg"
+	defaultFormat = jsonFormat
+	defaultSince  = 3600 * 365 * time.Hour
+	defaultDepth  = 100
 )
 
 type Server struct {
@@ -64,4 +76,36 @@ func (s *Server) Run() error {
 	}
 	log.Info().Msgf("Server running (port %v)...", s.port)
 	return srv.ListenAndServe()
+}
+
+func formatter(r *http.Request) (output.Formatter, error) {
+	v := defaultFormat
+	if f, found := r.URL.Query()["format"]; found {
+		v = strings.ToLower(f[0])
+	}
+
+	switch v {
+	case jsonFormat:
+		return output.NewJSONFormatter(), nil
+	case dotFormat:
+		return output.NewDotFormatter(), nil
+	case jpgFormat:
+		return output.NewJpgFormatter(), nil
+	default:
+		return nil, fmt.Errorf("unsupported output format (%v)", v)
+	}
+}
+
+func since(r *http.Request) (time.Duration, error) {
+	if f, found := r.URL.Query()["since"]; found {
+		return time.ParseDuration(f[0])
+	}
+	return defaultSince, nil
+}
+
+func depth(r *http.Request) (int, error) {
+	if f, found := r.URL.Query()["depth"]; found {
+		return strconv.Atoi(f[0])
+	}
+	return defaultDepth, nil
 }
