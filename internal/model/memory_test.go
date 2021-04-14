@@ -1,6 +1,8 @@
 package model
 
-import "testing"
+import (
+	"testing"
+)
 
 func TestMemoryModel(t *testing.T) {
 	m := NewMemoryModel()

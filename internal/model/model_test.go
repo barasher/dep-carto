@@ -66,6 +66,7 @@ func testModelWorkflow(t *testing.T, m Model) {
 	testCreate(t, m)
 	testDelete(t, m)
 	testSince(t, m)
+	testGetDependencies(t, m)
 }
 
 func testCreate(t *testing.T, m Model) {
@@ -179,4 +180,74 @@ func testSince(t *testing.T, m Model) {
 	servers, err = m.GetAll(context.Background(), &d)
 	assert.Nil(t, err)
 	assert.Len(t, servers, 0)
+}
+
+func testGetDependencies(t *testing.T, m Model) {
+	ctx := context.Background()
+	s1 := Server{
+		Hostname:     "h1",
+		IPs:          []string{"ip1"},
+		Dependencies: []Dependency{{Resource: "h2"}},
+		LastUpdate:   time.Now().Add(-24 * time.Hour),
+	}
+	assert.Nil(t, m.Add(ctx, s1))
+	s2 := Server{
+		Hostname:     "h2",
+		IPs:          []string{"ip2"},
+		Dependencies: []Dependency{{Resource: "ip3"}, {Resource: "h1"}},
+		LastUpdate:   time.Now().Add(-48 * time.Hour),
+	}
+	assert.Nil(t, m.Add(ctx, s2))
+	s3 := Server{
+		Hostname:     "h3",
+		IPs:          []string{"ip3"},
+		Dependencies: []Dependency{{Resource: "ip4"}},
+		LastUpdate:   time.Now().Add(-72 * time.Hour),
+	}
+	assert.Nil(t, m.Add(ctx, s3))
+	old := 24 * 365 * time.Hour
+
+	var tcs = []struct {
+		inTC       string
+		inIdent    string
+		inDepth    int
+		inSince    time.Duration
+		expServers []Server
+	}{
+		{"1.1", "h1", 10, old, []Server{s1, s2, s3}},
+		{"1.2", "ip1", 10, old, []Server{s1, s2, s3}},
+		{"1.3", "h2", 10, old, []Server{s1, s2, s3}},
+		{"1.4", "ip2", 10, old, []Server{s1, s2, s3}},
+		{"1.5", "h3", 10, old, []Server{s3}},
+		{"1.6", "ip3", 10, old, []Server{s3}},
+		{"1.7", "h4", 10, old, []Server{}},
+		{"1.8", "ip4", 10, old, []Server{}},
+
+		{"2.1", "h1", 1, old, []Server{s1, s2}},
+		{"2.2", "h1", 2, old, []Server{s1, s2, s3}},
+		{"2.3", "h1", 10, old, []Server{s1, s2, s3}},
+		{"2.4", "h1", 0, old, []Server{s1}},
+
+		{"3.1", "h1", 10, 50 * time.Hour, []Server{s1, s2}},
+		{"3.1", "h1", 10, 300 * time.Hour, []Server{s1, s2, s3}},
+	}
+	for _, tc := range tcs {
+		t.Run(tc.inTC, func(t *testing.T) {
+			got, err := m.GetDependencies(ctx, tc.inIdent, tc.inDepth, tc.inSince)
+			assert.Nil(t, err)
+			assert.ElementsMatch(t, tc.expServers, got)
+		})
+	}
+
+}
+
+func TestIsIdentifiedBy(t *testing.T) {
+	s := Server{
+		Hostname: "h",
+		IPs:      []string{"i1", "i2"},
+	}
+	assert.True(t, s.IsIdentifiedBy("h"))
+	assert.True(t, s.IsIdentifiedBy("i1"))
+	assert.True(t, s.IsIdentifiedBy("i2"))
+	assert.False(t, s.IsIdentifiedBy("i3"))
 }
