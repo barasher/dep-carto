@@ -29,8 +29,8 @@ type modelMock struct {
 	}
 	getDepending struct {
 		inIdent string
-		inDepth *int
-		inSince *time.Duration
+		inDepth int
+		inSince time.Duration
 		servers []model.Server
 		err     error
 	}
@@ -79,7 +79,7 @@ func (m *modelMock) MockGetDepending(s []model.Server, err error) *modelMock {
 	return m
 }
 
-func (m *modelMock) GetDepending(ctx context.Context, ident string, depth *int, since *time.Duration) ([]model.Server, error) {
+func (m *modelMock) GetDepending(ctx context.Context, ident string, depth int, since time.Duration) ([]model.Server, error) {
 	m.getDepending.inIdent = ident
 	m.getDepending.inDepth = depth
 	m.getDepending.inSince = since

@@ -2,6 +2,7 @@ package model
 
 import (
 	"context"
+	"fmt"
 	"time"
 )
 
@@ -55,8 +56,8 @@ func (m *memoryModel) getByIdentifier(ident string) []Server {
 	return s
 }
 
-func (m *memoryModel) GetDepending(ctx context.Context, ident string, depth *int, since *time.Duration) ([]Server, error) {
-	return []Server{}, nil
+func (m *memoryModel) GetDepending(ctx context.Context, ident string, depth int, since time.Duration) ([]Server, error) {
+	return []Server{}, fmt.Errorf("not yet implemented")
 }
 
 func (m *memoryModel) getDependencies(idents []string) []string {
