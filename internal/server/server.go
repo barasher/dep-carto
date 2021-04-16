@@ -39,6 +39,7 @@ func NewServer(model model.Model, port uint) (*Server, error) {
 	registerHandler(s.router, NewAddHandler(model), "add")
 	registerHandler(s.router, NewClearHandler(model), "clear")
 	registerHandler(s.router, NewGetHandler(model), "get")
+	registerHandler(s.router, NewGetDependenciesHandler(model), "getdependencies")
 	s.router.Handle("/metrics", promhttp.Handler())
 	return s, nil
 }
