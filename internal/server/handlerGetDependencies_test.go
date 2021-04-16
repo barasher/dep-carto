@@ -46,6 +46,7 @@ func TestGetDependenciesHandler_StatusCode(t *testing.T) {
 		expStatusCode int
 	}{
 		{"nominal", mOk, "since=3600s&depth=2&format=json", http.StatusOK},
+		{"noParam", mOk, "", http.StatusOK},
 		{"processError", mKo, "since=3600s&depth=2&format=json", http.StatusInternalServerError},
 		{"sinceError", mOk, "since=blabla&depth=2&format=json", http.StatusBadRequest},
 		{"depthError", mOk, "since=3600s&depth=blabla&format=json", http.StatusBadRequest},
